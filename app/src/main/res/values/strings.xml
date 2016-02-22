@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MyWallpapers</string>
+    <string name="text_add">添加</string>
+    <string name="text_set_wallpaper">设置壁纸</string>
+</resources>
