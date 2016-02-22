@@ -1,6 +1,9 @@
 package zhou.app.mywallpapers.ui.adapter
 
 import android.content.Context
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.provider.MediaStore
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +16,7 @@ import zhou.app.mywallpapers.R
 import zhou.app.mywallpapers.model.Wallpaper
 
 import kotlinx.android.synthetic.main.item_image.view.*
+import zhou.app.mywallpapers.App
 import zhou.app.mywallpapers.util.Callback
 import zhou.app.mywallpapers.util.OnClickCallback
 
@@ -21,26 +25,28 @@ import zhou.app.mywallpapers.util.OnClickCallback
  */
 class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallpaper>? = null) : RecyclerView.Adapter<WallpapersAdapter.Holder>() {
 
-    private var itemClickCallback: Callback<Wallpaper>? = null
-    private var addClickCallback: Callback<Wallpaper>? = null
+    var itemClickCallback: Callback<Wallpaper>? = null
+    var addClickCallback: Callback<Wallpaper>? = null
 
     private val onAddCallback = object : OnClickCallback {
         override fun onClick(view: View, position: Int) {
-            //            addClickCallback?.call()
+            addClickCallback?.call()
         }
     }
     private val onItemClickCallback = object : OnClickCallback {
         override fun onClick(view: View, position: Int) {
-            itemClickCallback?.call(wallpapers!![position])
+            itemClickCallback?.call(wallpapers!![position - 1])
         }
     }
 
 
     override fun onBindViewHolder(holder: Holder?, position: Int) {
+
         val wallpaper = wallpapers!![position]
 
         //        Glide.with(context).load(wallpaper.url).into(holder!!.icon)
         holder!!.title.text = wallpaper.title
+        holder.icon.setImageBitmap(BitmapFactory.decodeResource(App.instance.resources, R.drawable.background_1, Holder.options))
         //        holder.icon.setImageResource(R.drawable.background_1)
     }
 
@@ -76,6 +82,9 @@ class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallp
         companion object {
             val TYPE_ADD = 1
             val TYPE_ITEM = 0
+
+            var IN_SAMPLE_SIZE: Int? = null
+            val options = BitmapFactory.Options()
         }
 
         val icon: ImageView
@@ -99,6 +108,9 @@ class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallp
                     itemClickCallback?.onClick(root, adapterPosition)
                 }
             }
+
+            options.inSampleSize=10
+
 
         }
     }
