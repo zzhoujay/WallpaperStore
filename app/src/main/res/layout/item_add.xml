@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:background="@color/item_add_background"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="@dimen/recycler_view_height"
         android:layout_height="@dimen/recycler_view_height"
         android:layout_gravity="center"
-        android:background="@color/item_add_background"
-        android:clickable="true"
-        android:foreground="?attr/selectableItemBackground"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="10dp">

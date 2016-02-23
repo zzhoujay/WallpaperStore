@@ -11,9 +11,17 @@ interface OnClickCallback {
 }
 
 interface Callback<T> {
-    fun call(t: T?=null)
+    fun call(t: T? = null)
+}
+
+interface Callback2<T, K> {
+    fun call(t: T? = null, k: K? = null)
+}
+
+interface Callback3<T, K, M> {
+    fun call(t: T? = null, k: K? = null, m: M? = null)
 }
 
 interface Notifier {
-    fun notice(notifierId: Int)
+    fun notice(n: Any?=null)
 }

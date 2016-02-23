@@ -1,13 +1,14 @@
 package zhou.app.mywallpapers.ui.fragment
 
 import android.content.Context
-import android.support.v4.app.Fragment
+import android.support.v4.app.DialogFragment
 import zhou.app.mywallpapers.util.Notifier
 
 /**
  * Created by zhou on 16-2-23.
  */
-open class BaseFragment : Fragment() {
+open class BaseDialogFragment : DialogFragment() {
+
 
     var notifier: Notifier? = null
 

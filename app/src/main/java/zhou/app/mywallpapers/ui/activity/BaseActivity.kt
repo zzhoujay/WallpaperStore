@@ -7,7 +7,7 @@ import zhou.app.mywallpapers.util.Notifier
  * Created by zhou on 16-2-22.
  */
 open class BaseActivity : AppCompatActivity(), Notifier {
-    override fun notice(notifierId: Int) {
+    override fun notice(n: Any?) {
 
     }
 }

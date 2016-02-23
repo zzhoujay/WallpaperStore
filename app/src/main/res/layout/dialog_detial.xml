@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        style="@style/HintText"
+        android:text="@string/text_title" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:singleLine="true" />
+
+    <TextView
+        style="@style/HintText"
+        android:text="@string/text_image" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:maxHeight="200dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/background" />
+
+</LinearLayout>
