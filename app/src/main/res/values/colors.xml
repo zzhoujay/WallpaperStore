@@ -5,6 +5,6 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="item_add_background">#74000000</color>
-    <color name="top_bar_background">#a4000000</color>
+    <color name="top_bar_background">#44000000</color>
     <color name="hint_text_color">#444444</color>
 </resources>

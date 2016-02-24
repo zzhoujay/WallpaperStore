@@ -10,19 +10,26 @@
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="@dimen/recycler_view_height"
-        android:layout_height="@dimen/recycler_view_height"
+        android:layout_width="@dimen/wallpaperThumbnailWidth"
+        android:layout_height="@dimen/wallpaperThumbnailHeight"
         android:layout_gravity="center"
         android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="@dimen/recycler_view_height"
+        android:layout_width="@dimen/wallpaperThumbnailWidth"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:background="@color/item_add_background"
         android:gravity="center"
         android:padding="5dp"
         android:textColor="@android:color/white" />
+
+    <ImageView
+        android:id="@+id/wallpaper_icon"
+        android:layout_width="@dimen/wallpaperItemIconSize"
+        android:layout_height="@dimen/wallpaperItemIconSize"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
 </FrameLayout>

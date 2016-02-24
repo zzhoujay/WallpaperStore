@@ -5,7 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.provider.MediaStore
+import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
 import android.view.LayoutInflater
@@ -14,25 +14,35 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
+import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.fragment_display.*
 import org.jetbrains.anko.async
 import org.jetbrains.anko.uiThread
+import zhou.app.mywallpapers.App
 import zhou.app.mywallpapers.R
 import zhou.app.mywallpapers.model.Wallpaper
 import zhou.app.mywallpapers.persistence.DatabaseManager
 import zhou.app.mywallpapers.ui.adapter.WallpapersAdapter
 import zhou.app.mywallpapers.ui.dialog.DetailDialog
-import zhou.app.mywallpapers.util.Callback
-import zhou.app.mywallpapers.util.Callback3
-import zhou.app.mywallpapers.util.toast
+import zhou.app.mywallpapers.util.*
 
 
 /**
  * Created by zhou on 16-2-21.
  */
-class WallpaperDisplayFragment : BaseFragment() {
+class WallpaperDisplayFragment : Fragment() {
 
     var adapter: WallpapersAdapter? = null
+
+    override fun onResume() {
+        super.onResume()
+        App.instance.bus.register(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        App.instance.bus.unregister(this)
+    }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater!!.inflate(R.layout.fragment_display, container, false)
@@ -46,7 +56,8 @@ class WallpaperDisplayFragment : BaseFragment() {
             adapter = WallpapersAdapter(context)
             adapter!!.addClickCallback = object : Callback<Wallpaper> {
                 override fun call(t: Wallpaper?) {
-                    val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    val i = Intent(Intent.ACTION_GET_CONTENT)
+                    i.type = "image/*"
                     activity.startActivityForResult(i, RESULT_LOAD_IMAGE);
                 }
             }
@@ -76,7 +87,6 @@ class WallpaperDisplayFragment : BaseFragment() {
                             MENU_ID_EDIT -> {
                                 toast("Edit")
                                 val d = DetailDialog.newInstance(k)
-                                notice(d)
                                 d.show(fragmentManager, "detail")
                             }
                             MENU_ID_DELETE -> {
@@ -114,6 +124,19 @@ class WallpaperDisplayFragment : BaseFragment() {
             uiThread {
                 adapter!!.wallpapers = wallpapers
                 adapter!!.notifyDataSetChanged()
+            }
+        }
+    }
+
+    @Subscribe
+    fun handleEvent(event: Event) {
+        when (event.code) {
+            ACTION_RELOAD -> {
+                if (event.value is Wallpaper) {
+                    reloadWallpaper(event.value)
+                } else {
+                    reloadWallpaper()
+                }
             }
         }
     }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Top_bar">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:foreground">@color/top_bar_background</item>
+        <!--<item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>-->
+    </style>
+</resources>

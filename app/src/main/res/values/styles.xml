@@ -6,8 +6,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:navigationBarColor" tools:ignore="NewApi">@color/item_add_background
-        </item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowTranslucentNavigation" tools:ignore="NewApi">true</item>
+        <!--<item name="android:navigationBarColor" tools:ignore="NewApi">@color/item_add_background</item>-->
     </style>
 
     <style name="HintText">
@@ -15,6 +16,12 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">4dp</item>
         <item name="android:textColor">@color/hint_text_color</item>
+    </style>
+
+    <style name="Top_bar">
+        <item name="android:textColor">@android:color/white</item>
+        <!--<item name="android:background">@color/top_bar_background</item>-->
+        <!--<item name="android:foreground">?attr/selectableItemBackground</item>-->
     </style>
 
 </resources>

@@ -4,28 +4,33 @@ import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.dialog_detial.view.*
 import org.jetbrains.anko.async
 import org.jetbrains.anko.uiThread
+import zhou.app.mywallpapers.App
 import zhou.app.mywallpapers.R
 import zhou.app.mywallpapers.model.Wallpaper
 import zhou.app.mywallpapers.persistence.DatabaseManager
-import zhou.app.mywallpapers.ui.fragment.BaseDialogFragment
 import zhou.app.mywallpapers.ui.fragment.WallpaperDisplayFragment
+import zhou.app.mywallpapers.util.Event
+import zhou.app.mywallpapers.util.notice
 
 /**
  * Created by zhou on 16-2-23.
  */
-class DetailDialog : BaseDialogFragment() {
+class DetailDialog : DialogFragment() {
 
     companion object {
         val WALLPAPER = "wallpaper"
         val RESULT_LOAD_IMAGE = 18
         val DISMISS = 0x111
+        val RELOAD_IMAGE = 0x456
 
         fun newInstance(wallpaper: Wallpaper? = null): DetailDialog {
             val f = DetailDialog()
@@ -39,13 +44,17 @@ class DetailDialog : BaseDialogFragment() {
     }
 
     var newImagePath: String? = null
-        set(value) {
-            if (value != null && image != null) {
-                Glide.with(this).load(value).into(image)
-            }
-            newImagePath = value
-        }
     var image: ImageView? = null
+
+    override fun onResume() {
+        super.onResume()
+        App.instance.bus.register(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        App.instance.bus.unregister(this)
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(context)
@@ -79,7 +88,7 @@ class DetailDialog : BaseDialogFragment() {
                 async() {
                     DatabaseManager.instance.update(wallpaper!!)
                     uiThread {
-                        notice(WallpaperDisplayFragment.ACTION_RELOAD)
+                        notice(Event(WallpaperDisplayFragment.ACTION_RELOAD, null, this@DetailDialog, WallpaperDisplayFragment::class.java))
                         dismiss()
                     }
                 }
@@ -87,6 +96,18 @@ class DetailDialog : BaseDialogFragment() {
         }).setNegativeButton("取消", null)
 
         return builder.create()
+    }
+
+    @Subscribe
+    fun handleEvent(event: Event) {
+        when (event.code) {
+            RELOAD_IMAGE -> {
+                if (event.value != null && image != null && event.value is String) {
+                    Glide.with(this).load(event.value).into(image)
+                    newImagePath = event.value
+                }
+            }
+        }
     }
 
 
