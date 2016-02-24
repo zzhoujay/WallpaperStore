@@ -18,8 +18,7 @@ fun Fragment.toast(msg: CharSequence, time: Int = Toast.LENGTH_SHORT) {
 //        (activity as Notifier).notice(notifierId)
 //    }
 //}
-
-class Event(val code: Int, val value: Any? = null, val from: Any? = null, val `to`: Any? = null)
+data class Event(val code: Int, val value: Any? = null, val from: Any? = null, val `to`: Any? = null)
 
 fun  Any.notice(event: Event) {
     App.instance.bus.post(event)

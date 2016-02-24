@@ -1,6 +1,7 @@
 package zhou.app.mywallpapers.ui.dialog
 
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
@@ -17,6 +18,7 @@ import zhou.app.mywallpapers.App
 import zhou.app.mywallpapers.R
 import zhou.app.mywallpapers.model.Wallpaper
 import zhou.app.mywallpapers.persistence.DatabaseManager
+import zhou.app.mywallpapers.ui.activity.WallpaperDisplayActivity
 import zhou.app.mywallpapers.ui.fragment.WallpaperDisplayFragment
 import zhou.app.mywallpapers.util.Event
 import zhou.app.mywallpapers.util.notice
@@ -44,17 +46,19 @@ class DetailDialog : DialogFragment() {
     }
 
     var newImagePath: String? = null
+
     var image: ImageView? = null
 
-    override fun onResume() {
-        super.onResume()
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
         App.instance.bus.register(this)
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onDetach() {
+        super.onDetach()
         App.instance.bus.unregister(this)
     }
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(context)
@@ -73,7 +77,8 @@ class DetailDialog : DialogFragment() {
         Glide.with(this).load(wallpaper?.url).into(view.imageView)
 
         view.imageView.setOnClickListener {
-            val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            val i = Intent(Intent.ACTION_GET_CONTENT)
+            i.type = "image/*"
             activity.startActivityForResult(i, RESULT_LOAD_IMAGE);
         }
 
@@ -105,9 +110,20 @@ class DetailDialog : DialogFragment() {
                 if (event.value != null && image != null && event.value is String) {
                     Glide.with(this).load(event.value).into(image)
                     newImagePath = event.value
+                    println("gg:${event.value}")
                 }
             }
         }
+        println("event:$event")
+    }
+
+    fun setImagePath(value: String) {
+        if (image != null) {
+            image!!.postDelayed({
+                Glide.with(this).load(newImagePath).into(image)
+            }, 500)
+        }
+        this.newImagePath = value
     }
 
 

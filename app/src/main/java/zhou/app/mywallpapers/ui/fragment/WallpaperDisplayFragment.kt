@@ -22,6 +22,7 @@ import zhou.app.mywallpapers.App
 import zhou.app.mywallpapers.R
 import zhou.app.mywallpapers.model.Wallpaper
 import zhou.app.mywallpapers.persistence.DatabaseManager
+import zhou.app.mywallpapers.ui.activity.WallpaperDisplayActivity
 import zhou.app.mywallpapers.ui.adapter.WallpapersAdapter
 import zhou.app.mywallpapers.ui.dialog.DetailDialog
 import zhou.app.mywallpapers.util.*
@@ -87,6 +88,7 @@ class WallpaperDisplayFragment : Fragment() {
                             MENU_ID_EDIT -> {
                                 toast("Edit")
                                 val d = DetailDialog.newInstance(k)
+                                notice(Event(WallpaperDisplayActivity.CACHE_DIALOG, d))
                                 d.show(fragmentManager, "detail")
                             }
                             MENU_ID_DELETE -> {

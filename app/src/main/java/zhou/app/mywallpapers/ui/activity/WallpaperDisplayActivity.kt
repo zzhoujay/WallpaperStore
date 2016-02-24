@@ -4,10 +4,13 @@ import android.Manifest
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.provider.MediaStore
 import android.support.v7.app.ActionBar
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import com.squareup.otto.Subscribe
 import org.jetbrains.anko.toast
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
@@ -28,7 +31,11 @@ class WallpaperDisplayActivity : BaseActivity(), EasyPermissions.PermissionCallb
 
     companion object {
         const val flag = 5
+        const val PICK_IMAGE = 0x567
+        const val CACHE_DIALOG = 0x432
     }
+
+    private var detailDialog: DetailDialog? = null
 
     override fun onPermissionsDenied(p0: Int, p1: MutableList<String>?) {
         throw UnsupportedOperationException()
@@ -41,6 +48,7 @@ class WallpaperDisplayActivity : BaseActivity(), EasyPermissions.PermissionCallb
     @AfterPermissionGranted(flag)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         setContentView(R.layout.activity_display)
 
@@ -60,13 +68,25 @@ class WallpaperDisplayActivity : BaseActivity(), EasyPermissions.PermissionCallb
         App.instance.bus.register(this)
     }
 
+
     override fun onPause() {
         super.onPause()
         App.instance.bus.unregister(this)
     }
 
+    @Subscribe
     fun handleEvent(event: Event) {
+        when (event.code) {
+            PICK_IMAGE -> {
 
+            }
+            CACHE_DIALOG -> {
+                if (event.value is DetailDialog) {
+                    detailDialog = event.value
+                }
+            }
+        }
+        println("activity:$event")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -77,14 +97,15 @@ class WallpaperDisplayActivity : BaseActivity(), EasyPermissions.PermissionCallb
                 toast("文件无效")
             } else {
                 val wallpaper = Wallpaper(url = path)
-                notice(Event(WallpaperDisplayFragment.ACTION_RELOAD, wallpaper))
+                wallpaperFragment?.reloadWallpaper(wallpaper)
             }
-        } else if (resultCode == DetailDialog.RESULT_LOAD_IMAGE && resultCode == RESULT_OK) {
+        } else if (requestCode == DetailDialog.RESULT_LOAD_IMAGE && resultCode == RESULT_OK) {
             val path = getImagePathFromUri(applicationContext, data?.data)
             if (path == null) {
                 toast("文件无效")
             } else {
-                notice(Event(DetailDialog.RELOAD_IMAGE, path))
+                detailDialog?.setImagePath(path)
+                println("path:$path")
             }
         }
     }
