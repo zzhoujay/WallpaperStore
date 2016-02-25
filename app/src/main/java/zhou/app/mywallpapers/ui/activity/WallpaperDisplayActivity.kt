@@ -61,6 +61,7 @@ class WallpaperDisplayActivity : BaseActivity(), EasyPermissions.PermissionCallb
             EasyPermissions.requestPermissions(this, "gg", flag, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 
+
     }
 
     override fun onResume() {

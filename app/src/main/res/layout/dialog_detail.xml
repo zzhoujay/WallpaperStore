@@ -29,7 +29,6 @@
         android:clickable="true"
         android:foreground="?attr/selectableItemBackground"
         android:maxHeight="200dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/background" />
+        android:scaleType="fitCenter" />
 
 </LinearLayout>

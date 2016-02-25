@@ -4,21 +4,19 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.provider.MediaStore
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.squareup.otto.Subscribe
-import kotlinx.android.synthetic.main.dialog_detial.view.*
+import kotlinx.android.synthetic.main.dialog_detail.view.*
 import org.jetbrains.anko.async
 import org.jetbrains.anko.uiThread
 import zhou.app.mywallpapers.App
 import zhou.app.mywallpapers.R
 import zhou.app.mywallpapers.model.Wallpaper
 import zhou.app.mywallpapers.persistence.DatabaseManager
-import zhou.app.mywallpapers.ui.activity.WallpaperDisplayActivity
 import zhou.app.mywallpapers.ui.fragment.WallpaperDisplayFragment
 import zhou.app.mywallpapers.util.Event
 import zhou.app.mywallpapers.util.notice
@@ -63,7 +61,7 @@ class DetailDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(context)
 
-        val view = LayoutInflater.from(context).inflate(R.layout.dialog_detial, null)
+        val view = LayoutInflater.from(context).inflate(R.layout.dialog_detail, null)
 
         var wallpaper: Wallpaper? = null
 
