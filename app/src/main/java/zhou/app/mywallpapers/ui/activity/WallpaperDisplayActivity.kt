@@ -10,15 +10,20 @@ import android.support.v7.app.ActionBar
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 import com.squareup.otto.Subscribe
-import org.jetbrains.anko.toast
+import kotlinx.android.synthetic.main.activity_display.*
+import org.jetbrains.anko.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import zhou.app.mywallpapers.App
 import zhou.app.mywallpapers.R
+import zhou.app.mywallpapers.common.Config
 import zhou.app.mywallpapers.model.Wallpaper
 import zhou.app.mywallpapers.ui.dialog.DetailDialog
 import zhou.app.mywallpapers.ui.fragment.WallpaperDisplayFragment
+import zhou.app.mywallpapers.ui.widget.PinchImageView
 import zhou.app.mywallpapers.util.Event
 import zhou.app.mywallpapers.util.getImagePathFromUri
 
@@ -38,11 +43,9 @@ class WallpaperDisplayActivity : BaseActivity(), EasyPermissions.PermissionCallb
     private var detailDialog: DetailDialog? = null
 
     override fun onPermissionsDenied(p0: Int, p1: MutableList<String>?) {
-        throw UnsupportedOperationException()
     }
 
     override fun onPermissionsGranted(p0: Int, p1: MutableList<String>?) {
-        throw UnsupportedOperationException()
     }
 
     @AfterPermissionGranted(flag)
@@ -61,6 +64,7 @@ class WallpaperDisplayActivity : BaseActivity(), EasyPermissions.PermissionCallb
             EasyPermissions.requestPermissions(this, "gg", flag, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 
+        Glide.with(this).load("file:///android_asset/primary_1.jpg").into(wallpaper_preview)
 
     }
 
@@ -86,8 +90,25 @@ class WallpaperDisplayActivity : BaseActivity(), EasyPermissions.PermissionCallb
                     detailDialog = event.value
                 }
             }
+            Config.Action.preview_wallpaper -> {
+                if (event.value != null && event.value is Wallpaper) {
+                    Glide.with(this).load(event.value.url).into(wallpaper_preview)
+                }
+            }
+            Config.Action.set_wallpaper -> {
+                //                val t = TestDialog()
+                //                val b=Bundle()
+                //                b.putParcelable("gg",wallpaper_preview.drawingCache)
+                //                t.arguments=b
+                //                t.show(supportFragmentManager,"test")
+                //                val b=wallpaper_preview.drawingCache
+                //                wallpaper_preview.reset()
+                //                wallpaper_preview.setImageBitmap(b)
+//                println("width:${wallpaper_preview.width},height:${wallpaper_preview.height}")
+            }
         }
         println("activity:$event")
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -20,6 +20,7 @@ import org.jetbrains.anko.async
 import org.jetbrains.anko.uiThread
 import zhou.app.mywallpapers.App
 import zhou.app.mywallpapers.R
+import zhou.app.mywallpapers.common.Config
 import zhou.app.mywallpapers.model.Wallpaper
 import zhou.app.mywallpapers.persistence.DatabaseManager
 import zhou.app.mywallpapers.ui.activity.WallpaperDisplayActivity
@@ -64,15 +65,8 @@ class WallpaperDisplayFragment : Fragment() {
             }
             adapter!!.itemClickCallback = object : Callback<Wallpaper> {
                 override fun call(t: Wallpaper?) {
-                    if (t != null) {
-                        Glide.with(this@WallpaperDisplayFragment).load(t.url).asBitmap().centerCrop().into(object : SimpleTarget<Bitmap>(parent.width, parent.height) {
-                            override fun onResourceReady(p0: Bitmap?, p1: GlideAnimation<in Bitmap>?) {
-                                parent.background = BitmapDrawable(resources, p0)
-                            }
-                        })
-                    } else {
-                        toast("gg")
-                    }
+                    //                    testWallpaper(t)
+                    notice(Event(Config.Action.preview_wallpaper, t))
                 }
             }
             adapter!!.itemLongClickCallback = object : Callback3<View, Wallpaper, Int> {
@@ -110,11 +104,26 @@ class WallpaperDisplayFragment : Fragment() {
         }
         recyclerView.adapter = adapter
 
+        topBar.setOnClickListener {
+            notice(Event(Config.Action.set_wallpaper))
+        }
+
         val wm = WallpaperManager.getInstance(context)
 
-        parent.background = wm.fastDrawable
-
+        //        parent.background = wm.fastDrawable
         reloadWallpaper()
+    }
+
+    fun testWallpaper(t: Wallpaper?) {
+        if (t != null) {
+            Glide.with(this@WallpaperDisplayFragment).load(t.url).asBitmap().centerCrop().into(object : SimpleTarget<Bitmap>(parent.width, parent.height) {
+                override fun onResourceReady(p0: Bitmap?, p1: GlideAnimation<in Bitmap>?) {
+                    parent.background = BitmapDrawable(resources, p0)
+                }
+            })
+        } else {
+            toast("gg")
+        }
     }
 
     fun reloadWallpaper(wallpaper: Wallpaper? = null) {
