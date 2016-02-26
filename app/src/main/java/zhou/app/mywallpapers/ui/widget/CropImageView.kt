@@ -36,6 +36,8 @@ class CropImageView : ImageView {
     }
 
     val currMatrix = Matrix()
+    var offset: Int = 0
+    var border: Int = 0
 
 
     fun init() {
@@ -79,6 +81,9 @@ class CropImageView : ImageView {
             dy = (vheight - dheight * scale) * 0.5f
         }
 
+        border = ((dwidth * scale - vwidth) / 2).toInt()
+        offset = 0
+
         currMatrix.setScale(scale, scale)
         currMatrix.postTranslate(dx, dy)
     }
@@ -90,8 +95,23 @@ class CropImageView : ImageView {
         }
 
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-
-            currMatrix.postTranslate(-distanceX, 0f)
+            var dx = distanceX.toInt()
+            val temp = offset - dx
+            if (offset >= border && distanceX < 0 || offset <= -border && distanceX > 0) {
+                return false
+            } else if (offset > 0 && offset < border && temp >= border) {
+                dx = border - offset
+                offset = border
+            } else if (offset < 0 && offset > -border && temp <= -border) {
+                dx = border - offset
+                offset = -border
+            } else if (offset > 0 && offset < border && temp >= border) {
+                dx = border - offset
+                offset = border
+            } else {
+                offset += dx
+            }
+            currMatrix.postTranslate(-dx.toFloat(), 0f)
             imageMatrix = Matrix(currMatrix)
             invalidate()
             return true
