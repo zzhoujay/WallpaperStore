@@ -20,8 +20,11 @@ import zhou.app.mywallpapers.util.OnClickCallback
 /**
  * Created by zhou on 16-2-20.
  */
-class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallpaper>? = null) : RecyclerView.Adapter<WallpapersAdapter.Holder>() {
+class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallpaper>? = null) : RecyclerView.Adapter<WallpapersAdapter.BaseHolder>() {
 
+    val functionalCount = 1
+
+    var select = -1
     var itemClickCallback: Callback<Wallpaper>? = null
     var addClickCallback: Callback<Wallpaper>? = null
     var itemLongClickCallback: Callback3<View, Wallpaper, Int>? = null
@@ -33,6 +36,11 @@ class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallp
     }
     private val onItemClickCallback = object : OnClickCallback {
         override fun onClick(view: View, position: Int) {
+            if (position >= functionalCount) {
+                notifyItemChanged(select)
+                notifyItemChanged(position)
+                select = position
+            }
             itemClickCallback?.call(wallpapers!![position - 1])
         }
     }
@@ -43,11 +51,8 @@ class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallp
         }
     }
 
-
-    override fun onBindViewHolder(holder: Holder?, position: Int) {
-
-        if (holder!!.type == Holder.TYPE_ADD) {
-        } else {
+    override fun onBindViewHolder(holder: BaseHolder?, position: Int) {
+        if (holder is WallpaperHolder) {
             val wallpaper = wallpapers!![position - 1]
 
             if (TextUtils.isEmpty(wallpaper.title)) {
@@ -56,25 +61,29 @@ class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallp
                 holder.title.visibility = View.VISIBLE
                 holder.title.text = wallpaper.title
             }
-            Glide.with(context).load(wallpaper.url).into(holder.icon)
+            if (select < 0) {
+                holder.checked = false
+            } else {
+                holder.checked = position == select
+            }
+            Glide.with(context).load(wallpaper.url).into(holder.wallpaper)
         }
-
     }
 
     override fun getItemCount(): Int {
         return (wallpapers?.size ?: 0) + 1
     }
 
-    override fun onCreateViewHolder(p0: ViewGroup?, p1: Int): Holder? {
+    override fun onCreateViewHolder(p0: ViewGroup?, p1: Int): BaseHolder? {
         if (context == null) {
             context = p0!!.context
         }
-        var holder: Holder
-        if (p1 == Holder.TYPE_ADD) {
-            holder = Holder(LayoutInflater.from(context).inflate(R.layout.item_add, null), Holder.TYPE_ADD)
+        var holder: BaseHolder
+        if (p1 == TYPE_ADD) {
+            holder = FunctionalHolder(LayoutInflater.from(context).inflate(R.layout.item_add, null))
             holder.clickCallback = onAddCallback
         } else {
-            holder = Holder(LayoutInflater.from(context).inflate(R.layout.item_image, null), Holder.TYPE_ITEM)
+            holder = WallpaperHolder(LayoutInflater.from(context).inflate(R.layout.item_image, null))
             holder.clickCallback = onItemClickCallback
             holder.longClickCallback = onItemLongClickCallback
         }
@@ -83,46 +92,67 @@ class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallp
 
     override fun getItemViewType(position: Int): Int {
         if (position == 0) {
-            return Holder.TYPE_ADD
+            return TYPE_ADD
         } else {
-            return Holder.TYPE_ITEM
+            return TYPE_ITEM
         }
     }
 
-    class Holder(val root: View, val type: Int) : RecyclerView.ViewHolder(root) {
-
-        companion object {
-            val TYPE_ADD = 1
-            val TYPE_ITEM = 0
-        }
-
-        val icon: ImageView
-        val title: TextView
+    open class BaseHolder(val root: View) : RecyclerView.ViewHolder(root) {
 
         var clickCallback: OnClickCallback? = null
         var longClickCallback: OnClickCallback? = null
 
         init {
-            if (type == TYPE_ADD) {
-                icon = root.icon_add
-                title = root.text
-            } else {
-                icon = root.icon
-                title = root.title
-            }
-
             root.setOnClickListener {
                 clickCallback?.onClick(root, adapterPosition)
             }
             root.setOnLongClickListener {
-                if (longClickCallback == null) {
-                    false
-                } else {
-                    longClickCallback!!.onClick(root, adapterPosition)
-                    true
-                }
+                longClickCallback?.onClick(root, adapterPosition)
+                true
             }
         }
+    }
+
+    class FunctionalHolder(root: View) : BaseHolder(root) {
+
+        val icon: ImageView
+        val text: TextView
+
+        init {
+            icon = root.icon_add
+            text = root.text
+        }
+    }
+
+    class WallpaperHolder(root: View) : BaseHolder(root) {
+
+        val wallpaper: ImageView
+        val title: TextView
+        val icon: ImageView
+
+        var checked = false
+            set(value) {
+                field = value
+                if (value) {
+                    icon.visibility = View.VISIBLE
+                } else {
+                    icon.visibility = View.GONE
+                }
+            }
+
+        init {
+            wallpaper = root.icon
+            title = root.title
+            icon = root.wallpaper_icon
+        }
+
+
+    }
+
+    companion object {
+        const val TYPE_ADD = 1
+        const val TYPE_ITEM = 0
     }
 
 }

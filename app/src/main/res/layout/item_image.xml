@@ -27,6 +27,7 @@
 
     <ImageView
         android:id="@+id/wallpaper_icon"
+        android:src="@mipmap/ic_done"
         android:layout_width="@dimen/wallpaperItemIconSize"
         android:layout_height="@dimen/wallpaperItemIconSize"
         android:layout_gravity="center"
