@@ -35,9 +35,13 @@ class CropImageView : ImageView {
         init()
     }
 
-    val currMatrix = Matrix()
-    var offset: Int = 0
-    var border: Int = 0
+    val cropMatrix: Matrix by lazy {
+        Matrix()
+    }
+
+    var offset = 0f
+    var border = 0f
+    var horizontal = true
 
 
     fun init() {
@@ -45,7 +49,6 @@ class CropImageView : ImageView {
     }
 
     override fun onDraw(canvas: Canvas?) {
-        imageMatrix = Matrix(currMatrix)
         super.onDraw(canvas)
     }
 
@@ -76,16 +79,23 @@ class CropImageView : ImageView {
         if (dwidth * vheight > vwidth * dheight) {
             scale = vheight.toFloat() / dheight.toFloat()
             dx = (vwidth - dwidth * scale) * 0.5f
+            horizontal = true
+            border = ((dwidth * scale - vwidth) / 2)
         } else {
             scale = vwidth.toFloat() / dwidth.toFloat()
             dy = (vheight - dheight * scale) * 0.5f
+            horizontal = false
+            border = ((dheight * scale - vheight) / 2)
         }
 
-        border = ((dwidth * scale - vwidth) / 2).toInt()
-        offset = 0
+        offset = 0f
 
-        currMatrix.setScale(scale, scale)
-        currMatrix.postTranslate(dx, dy)
+        cropMatrix.setScale(scale, scale)
+        cropMatrix.postTranslate(dx, dy)
+
+        imageMatrix = cropMatrix
+
+        invalidate()
     }
 
 
@@ -95,24 +105,25 @@ class CropImageView : ImageView {
         }
 
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-            var dx = distanceX.toInt()
-            val temp = offset - dx
-            if (offset >= border && distanceX < 0 || offset <= -border && distanceX > 0) {
-                return false
-            } else if (offset > 0 && offset < border && temp >= border) {
-                dx = border - offset
-                offset = border
-            } else if (offset < 0 && offset > -border && temp <= -border) {
-                dx = border - offset
+            var d = if (horizontal) distanceX else distanceY
+            var newMatrix = Matrix(cropMatrix)
+            var reduce = d < 0
+            var temp = d + offset
+
+            if (reduce && (offset <= -border || temp <= -border)) {
                 offset = -border
-            } else if (offset > 0 && offset < border && temp >= border) {
-                dx = border - offset
+            } else if (!reduce && (offset >= border || temp >= border)) {
                 offset = border
             } else {
-                offset += dx
+                offset = temp
             }
-            currMatrix.postTranslate(-dx.toFloat(), 0f)
-            imageMatrix = Matrix(currMatrix)
+
+            if (horizontal) {
+                newMatrix.postTranslate(-offset, 0f)
+            } else {
+                newMatrix.postTranslate(0f, -offset)
+            }
+            imageMatrix = newMatrix
             invalidate()
             return true
         }

@@ -1,20 +1,14 @@
 package zhou.app.mywallpapers.ui.activity
 
 import android.Manifest
+import android.app.WallpaperManager
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.provider.MediaStore
-import android.support.v7.app.ActionBar
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.ImageView
+import android.support.v7.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.activity_display.*
-import org.jetbrains.anko.*
+import org.jetbrains.anko.toast
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import zhou.app.mywallpapers.App
@@ -23,16 +17,17 @@ import zhou.app.mywallpapers.common.Config
 import zhou.app.mywallpapers.model.Wallpaper
 import zhou.app.mywallpapers.ui.dialog.DetailDialog
 import zhou.app.mywallpapers.ui.fragment.WallpaperDisplayFragment
-import zhou.app.mywallpapers.ui.widget.PinchImageView
 import zhou.app.mywallpapers.util.Event
 import zhou.app.mywallpapers.util.getImagePathFromUri
+import zhou.app.mywallpapers.util.loadWallpaperInputStream
 
 /**
  * Created by zhou on 16-2-21.
  */
-class WallpaperDisplayActivity : BaseActivity(), EasyPermissions.PermissionCallbacks {
+class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     private var wallpaperFragment: WallpaperDisplayFragment? = null
+    private var currWallpaper: Wallpaper? = null
 
     companion object {
         const val flag = 5
@@ -64,7 +59,9 @@ class WallpaperDisplayActivity : BaseActivity(), EasyPermissions.PermissionCallb
             EasyPermissions.requestPermissions(this, "gg", flag, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 
-        Glide.with(this).load("file:///android_asset/primary_1.jpg").into(wallpaper_preview)
+        wallpaper_preview.setImageDrawable(WallpaperManager.getInstance(applicationContext).fastDrawable)
+
+        //        Glide.with(this).load("file:///android_asset/primary_1.jpg").into(wallpaper_preview)
 
     }
 
@@ -92,23 +89,23 @@ class WallpaperDisplayActivity : BaseActivity(), EasyPermissions.PermissionCallb
             }
             Config.Action.preview_wallpaper -> {
                 if (event.value != null && event.value is Wallpaper) {
+                    currWallpaper = event.value
                     Glide.with(this).load(event.value.url).into(wallpaper_preview)
                 }
             }
             Config.Action.set_wallpaper -> {
-                //                val t = TestDialog()
-                //                val b=Bundle()
-                //                b.putParcelable("gg",wallpaper_preview.drawingCache)
-                //                t.arguments=b
-                //                t.show(supportFragmentManager,"test")
-                //                val b=wallpaper_preview.drawingCache
-                //                wallpaper_preview.reset()
-                //                wallpaper_preview.setImageBitmap(b)
-//                println("width:${wallpaper_preview.width},height:${wallpaper_preview.height}")
+                if (currWallpaper != null) {
+                    val wallpaperInputStream = loadWallpaperInputStream(currWallpaper!!.url)
+                    if (wallpaperInputStream != null) {
+                        val wm = WallpaperManager.getInstance(applicationContext)
+                        wm.setStream(wallpaperInputStream)
+                        toast("壁纸设置成功")
+                        return
+                    }
+                }
+                toast("设置失败")
             }
         }
-        println("activity:$event")
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
