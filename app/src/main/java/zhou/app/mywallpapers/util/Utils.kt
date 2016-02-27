@@ -13,11 +13,7 @@ fun Fragment.toast(msg: CharSequence, time: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(context, msg, time).show()
 }
 
-//fun Fragment.notice(notifierId: Any? = null) {
-//    if (activity is Notifier) {
-//        (activity as Notifier).notice(notifierId)
-//    }
-//}
+
 data class Event(val code: Int, val value: Any? = null, val from: Any? = null, val `to`: Any? = null)
 
 fun Any.notice(event: Event) {

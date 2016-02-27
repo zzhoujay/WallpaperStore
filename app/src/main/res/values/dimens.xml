@@ -4,7 +4,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="recycler_view_height">100dp</dimen>
-    <dimen name="wallpaperItemIconSize">40dp</dimen>
+    <dimen name="wallpaperItemIconSize">64dp</dimen>
     <dimen name="wallpaperThumbnailWidth">106.5dp</dimen>
     <dimen name="wallpaperThumbnailHeight">94.5dp</dimen>
+    <dimen name="detail_icon_height">200dp</dimen>
 </resources>

@@ -7,4 +7,5 @@
     <color name="item_add_background">#74000000</color>
     <color name="top_bar_background">#44000000</color>
     <color name="hint_text_color">#444444</color>
+    <color name="placeholder_color">#74000000</color>
 </resources>

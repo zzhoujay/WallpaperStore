@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:clickable="true"
-        android:drawableLeft="@mipmap/ic_done"
+        android:drawableLeft="@drawable/ic_done"
         android:drawablePadding="8dp"
         android:gravity="start|center_vertical"
         android:paddingLeft="10dp"

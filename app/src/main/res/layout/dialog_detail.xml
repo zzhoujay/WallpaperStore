@@ -23,12 +23,11 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/detail_icon_height"
         android:layout_margin="5dp"
         android:adjustViewBounds="true"
         android:clickable="true"
         android:foreground="?attr/selectableItemBackground"
-        android:maxHeight="200dp"
         android:scaleType="fitCenter" />
 
 </LinearLayout>

@@ -9,12 +9,12 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.dialog_detail.view.*
 import org.jetbrains.anko.async
 import org.jetbrains.anko.uiThread
 import zhou.app.mywallpapers.App
 import zhou.app.mywallpapers.R
+import zhou.app.mywallpapers.common.Config
 import zhou.app.mywallpapers.model.Wallpaper
 import zhou.app.mywallpapers.persistence.DatabaseManager
 import zhou.app.mywallpapers.ui.fragment.WallpaperDisplayFragment
@@ -27,23 +27,32 @@ import zhou.app.mywallpapers.util.notice
 class DetailDialog : DialogFragment() {
 
     companion object {
-        val WALLPAPER = "wallpaper"
-        val RESULT_LOAD_IMAGE = 18
-        val DISMISS = 0x111
-        val RELOAD_IMAGE = 0x456
 
         fun newInstance(wallpaper: Wallpaper? = null): DetailDialog {
             val f = DetailDialog()
             if (wallpaper != null) {
                 val b = Bundle()
-                b.putParcelable(WALLPAPER, wallpaper)
+                b.putParcelable(Config.Tag.wallpaper, wallpaper)
                 f.arguments = b
             }
             return f
         }
     }
 
-    var newImagePath: String? = null
+    var imagePath: String? = null
+        set(value) {
+            if (image != null && value != null) {
+                image!!.postDelayed({
+                    Glide.with(this)
+                            .load(value)
+                            .error(R.drawable.error)
+                            .placeholder(R.drawable.placeholder)
+                            .crossFade()
+                            .into(image)
+                }, 500)
+            }
+            field = value
+        }
 
     var image: ImageView? = null
 
@@ -65,8 +74,8 @@ class DetailDialog : DialogFragment() {
 
         var wallpaper: Wallpaper? = null
 
-        if (arguments.containsKey(WALLPAPER)) {
-            wallpaper = arguments.getParcelable(WALLPAPER)
+        if (arguments.containsKey(Config.Tag.wallpaper)) {
+            wallpaper = arguments.getParcelable(Config.Tag.wallpaper)
         }
 
         image = view.imageView
@@ -77,21 +86,21 @@ class DetailDialog : DialogFragment() {
         view.imageView.setOnClickListener {
             val i = Intent(Intent.ACTION_GET_CONTENT)
             i.type = "image/*"
-            activity.startActivityForResult(i, RESULT_LOAD_IMAGE);
+            activity.startActivityForResult(i, Config.Flag.result_select_image);
         }
 
 
         builder.setView(view).setPositiveButton("确定", { p0, p1 ->
             val title = view.editText.text.toString()
-            if (wallpaper != null && (!wallpaper!!.title.equals(title) || (newImagePath != null && !wallpaper!!.url.equals(newImagePath)))) {
+            if (wallpaper != null && (!wallpaper!!.title.equals(title) || (imagePath != null && !wallpaper!!.url.equals(imagePath)))) {
                 wallpaper!!.title = title
-                if (newImagePath != null) {
-                    wallpaper!!.url = newImagePath!!
+                if (imagePath != null) {
+                    wallpaper!!.url = imagePath!!
                 }
                 async() {
                     DatabaseManager.instance.update(wallpaper!!)
                     uiThread {
-                        notice(Event(WallpaperDisplayFragment.ACTION_RELOAD, null, this@DetailDialog, WallpaperDisplayFragment::class.java))
+                        notice(Event(Config.Action.reload_list, null, this@DetailDialog, WallpaperDisplayFragment::class.java))
                         dismiss()
                     }
                 }
@@ -99,29 +108,6 @@ class DetailDialog : DialogFragment() {
         }).setNegativeButton("取消", null)
 
         return builder.create()
-    }
-
-    @Subscribe
-    fun handleEvent(event: Event) {
-        when (event.code) {
-            RELOAD_IMAGE -> {
-                if (event.value != null && image != null && event.value is String) {
-                    Glide.with(this).load(event.value).into(image)
-                    newImagePath = event.value
-                    println("gg:${event.value}")
-                }
-            }
-        }
-        println("event:$event")
-    }
-
-    fun setImagePath(value: String) {
-        if (image != null) {
-            image!!.postDelayed({
-                Glide.with(this).load(newImagePath).into(image)
-            }, 500)
-        }
-        this.newImagePath = value
     }
 
 

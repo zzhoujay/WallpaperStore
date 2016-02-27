@@ -20,14 +20,34 @@ import zhou.app.mywallpapers.util.OnClickCallback
 /**
  * Created by zhou on 16-2-20.
  */
-class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallpaper>? = null) : RecyclerView.Adapter<WallpapersAdapter.BaseHolder>() {
+class WallpapersAdapter(ctx: Context? = null, wps: List<Wallpaper>? = null) : RecyclerView.Adapter<WallpapersAdapter.BaseHolder>() {
 
     val functionalCount = 1
 
     var select = -1
+    var selectWallpaper: Wallpaper? = null
     var itemClickCallback: Callback<Wallpaper>? = null
     var addClickCallback: Callback<Wallpaper>? = null
     var itemLongClickCallback: Callback3<View, Wallpaper, Int>? = null
+    var context: Context? = null
+    var wallpapers: List<Wallpaper>? = null
+        set(value) {
+            field = value
+            value?.forEachIndexed { index, wallpaper ->
+                if (wallpaper.equals(selectWallpaper)) {
+                    select = index + functionalCount
+                    selectWallpaper = wallpaper
+                    return
+                }
+            }
+            select = -1
+            selectWallpaper = null
+        }
+
+    init {
+        this.context = ctx
+        this.wallpapers = wps
+    }
 
     private val onAddCallback = object : OnClickCallback {
         override fun onClick(view: View, position: Int) {
@@ -36,12 +56,14 @@ class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallp
     }
     private val onItemClickCallback = object : OnClickCallback {
         override fun onClick(view: View, position: Int) {
+            val w = wallpapers!![position - functionalCount]
             if (position >= functionalCount) {
                 notifyItemChanged(select)
                 notifyItemChanged(position)
                 select = position
+                selectWallpaper = w
             }
-            itemClickCallback?.call(wallpapers!![position - 1])
+            itemClickCallback?.call(w)
         }
     }
 
@@ -66,7 +88,12 @@ class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallp
             } else {
                 holder.checked = position == select
             }
-            Glide.with(context).load(wallpaper.url).into(holder.wallpaper)
+            Glide.with(context)
+                    .load(wallpaper.url)
+                    .error(R.drawable.error)
+                    .placeholder(R.drawable.placeholder)
+                    .crossFade()
+                    .into(holder.wallpaper)
         }
     }
 
@@ -146,7 +173,6 @@ class WallpapersAdapter(var context: Context? = null, var wallpapers: List<Wallp
             title = root.title
             icon = root.wallpaper_icon
         }
-
 
     }
 

@@ -29,12 +29,6 @@ class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.Permission
     private var wallpaperFragment: WallpaperDisplayFragment? = null
     private var currWallpaper: Wallpaper? = null
 
-    companion object {
-        const val flag = 5
-        const val PICK_IMAGE = 0x567
-        const val CACHE_DIALOG = 0x432
-    }
-
     private var detailDialog: DetailDialog? = null
 
     override fun onPermissionsDenied(p0: Int, p1: MutableList<String>?) {
@@ -43,7 +37,7 @@ class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.Permission
     override fun onPermissionsGranted(p0: Int, p1: MutableList<String>?) {
     }
 
-    @AfterPermissionGranted(flag)
+    @AfterPermissionGranted(Config.Flag.permission_flag)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -56,10 +50,14 @@ class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.Permission
 
 
         if (!EasyPermissions.hasPermissions(applicationContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            EasyPermissions.requestPermissions(this, "gg", flag, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            EasyPermissions.requestPermissions(this, "gg", Config.Flag.permission_flag, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 
-        wallpaper_preview.setImageDrawable(WallpaperManager.getInstance(applicationContext).fastDrawable)
+        val d = WallpaperManager.getInstance(applicationContext).drawable
+
+        println(d)
+
+        wallpaper_preview.setImageDrawable(d)
 
         //        Glide.with(this).load("file:///android_asset/primary_1.jpg").into(wallpaper_preview)
 
@@ -79,10 +77,7 @@ class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.Permission
     @Subscribe
     fun handleEvent(event: Event) {
         when (event.code) {
-            PICK_IMAGE -> {
-
-            }
-            CACHE_DIALOG -> {
+            Config.Action.cache_dialog -> {
                 if (event.value is DetailDialog) {
                     detailDialog = event.value
                 }
@@ -90,7 +85,11 @@ class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.Permission
             Config.Action.preview_wallpaper -> {
                 if (event.value != null && event.value is Wallpaper) {
                     currWallpaper = event.value
-                    Glide.with(this).load(event.value.url).into(wallpaper_preview)
+                    Glide.with(this).load(event.value.url)
+                            .error(R.drawable.error)
+                            .placeholder(R.drawable.placeholder)
+                            .crossFade()
+                            .into(wallpaper_preview)
                 }
             }
             Config.Action.set_wallpaper -> {
@@ -110,7 +109,7 @@ class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.Permission
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == WallpaperDisplayFragment.RESULT_LOAD_IMAGE && resultCode == RESULT_OK) {
+        if (requestCode == Config.Flag.result_pick_image && resultCode == RESULT_OK) {
             val path = getImagePathFromUri(applicationContext, data?.data)
             if (path == null) {
                 toast("文件无效")
@@ -118,12 +117,12 @@ class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.Permission
                 val wallpaper = Wallpaper(url = path)
                 wallpaperFragment?.reloadWallpaper(wallpaper)
             }
-        } else if (requestCode == DetailDialog.RESULT_LOAD_IMAGE && resultCode == RESULT_OK) {
+        } else if (requestCode == Config.Flag.result_select_image && resultCode == RESULT_OK) {
             val path = getImagePathFromUri(applicationContext, data?.data)
             if (path == null) {
                 toast("文件无效")
             } else {
-                detailDialog?.setImagePath(path)
+                detailDialog?.imagePath = path
                 println("path:$path")
             }
         }

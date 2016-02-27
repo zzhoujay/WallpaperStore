@@ -60,12 +60,11 @@ class WallpaperDisplayFragment : Fragment() {
                 override fun call(t: Wallpaper?) {
                     val i = Intent(Intent.ACTION_GET_CONTENT)
                     i.type = "image/*"
-                    activity.startActivityForResult(i, RESULT_LOAD_IMAGE);
+                    activity.startActivityForResult(i, Config.Flag.result_pick_image);
                 }
             }
             adapter!!.itemClickCallback = object : Callback<Wallpaper> {
                 override fun call(t: Wallpaper?) {
-                    //                    testWallpaper(t)
                     notice(Event(Config.Action.preview_wallpaper, t))
                 }
             }
@@ -73,24 +72,23 @@ class WallpaperDisplayFragment : Fragment() {
                 override fun call(t: View?, k: Wallpaper?, m: Int?) {
                     val popMenu = PopupMenu(context, t)
                     val menu = popMenu.menu
-                    menu.add(0, MENU_ID_EDIT, 0, "编辑")
+                    menu.add(0, Config.Id.menu_edit, 0, "编辑")
                     if (!k?.protect!!) {
-                        menu.add(0, MENU_ID_DELETE, 1, "删除")
+                        menu.add(0, Config.Id.menu_delete, 1, "删除")
                     }
                     popMenu.setOnMenuItemClickListener {
                         when (it.itemId) {
-                            MENU_ID_EDIT -> {
-                                toast("Edit")
+                            Config.Id.menu_edit -> {
                                 val d = DetailDialog.newInstance(k)
-                                notice(Event(WallpaperDisplayActivity.CACHE_DIALOG, d))
+                                notice(Event(Config.Action.cache_dialog, d))
                                 d.show(fragmentManager, "detail")
                             }
-                            MENU_ID_DELETE -> {
-                                toast("Delete")
+                            Config.Id.menu_delete -> {
                                 async() {
                                     if (DatabaseManager.instance.delete(k?.id)) {
                                         uiThread {
                                             reloadWallpaper()
+                                            toast("删除成功")
                                         }
                                     }
                                 }
@@ -108,22 +106,7 @@ class WallpaperDisplayFragment : Fragment() {
             notice(Event(Config.Action.set_wallpaper))
         }
 
-        val wm = WallpaperManager.getInstance(context)
-
-        //        parent.background = wm.fastDrawable
         reloadWallpaper()
-    }
-
-    fun testWallpaper(t: Wallpaper?) {
-        if (t != null) {
-            Glide.with(this@WallpaperDisplayFragment).load(t.url).asBitmap().centerCrop().into(object : SimpleTarget<Bitmap>(parent.width, parent.height) {
-                override fun onResourceReady(p0: Bitmap?, p1: GlideAnimation<in Bitmap>?) {
-                    parent.background = BitmapDrawable(resources, p0)
-                }
-            })
-        } else {
-            toast("gg")
-        }
     }
 
     fun reloadWallpaper(wallpaper: Wallpaper? = null) {
@@ -142,7 +125,7 @@ class WallpaperDisplayFragment : Fragment() {
     @Subscribe
     fun handleEvent(event: Event) {
         when (event.code) {
-            ACTION_RELOAD -> {
+            Config.Action.reload_list -> {
                 if (event.value is Wallpaper) {
                     reloadWallpaper(event.value)
                 } else {
@@ -153,13 +136,9 @@ class WallpaperDisplayFragment : Fragment() {
     }
 
     companion object {
-        val RESULT_LOAD_IMAGE = 0x123
-        val MENU_ID_EDIT = 0x123
-        val MENU_ID_DELETE = 0x234
-        val ACTION_RELOAD = 0x134
+
         fun newInstance(): WallpaperDisplayFragment {
             val f = WallpaperDisplayFragment()
-
             return f;
         }
     }

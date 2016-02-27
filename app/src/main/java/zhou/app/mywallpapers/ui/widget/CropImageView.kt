@@ -42,14 +42,11 @@ class CropImageView : ImageView {
     var offset = 0f
     var border = 0f
     var horizontal = true
+    var hasMeasured = false
 
 
     fun init() {
         super.setScaleType(ScaleType.MATRIX)
-    }
-
-    override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
     }
 
     override fun setImageBitmap(bm: Bitmap?) {
@@ -67,7 +64,16 @@ class CropImageView : ImageView {
         resetMatrix()
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        hasMeasured = true
+        resetMatrix()
+    }
+
     fun resetMatrix() {
+        if (drawable == null || !hasMeasured) {
+            return
+        }
         val dwidth = drawable?.intrinsicWidth ?: 1
         val dheight = drawable?.intrinsicHeight ?: 1
         val vheight = height - paddingTop - paddingBottom
