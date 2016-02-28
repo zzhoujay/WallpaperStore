@@ -10,6 +10,7 @@ import java.util.*
 
 /**
  * Created by zhou on 16-2-21.
+ * 数据库操作工具类
  */
 
 class DatabaseManager : ManagedSQLiteOpenHelper(App.instance, Config.Database.DATABASE_NAME, version = Config.Database.DATABASE_VERSION) {
@@ -21,6 +22,7 @@ class DatabaseManager : ManagedSQLiteOpenHelper(App.instance, Config.Database.DA
                 Config.Database.URL to TEXT,
                 Config.Database.PROTECT to INTEGER,
                 Config.Database.DATE to INTEGER)
+
     }
 
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase?, p1: Int, p2: Int) {
@@ -28,16 +30,28 @@ class DatabaseManager : ManagedSQLiteOpenHelper(App.instance, Config.Database.DA
         onCreate(sqLiteDatabase)
     }
 
-    fun insert(wallpaper: Wallpaper) {
-        use {
-            insert(Config.Database.TABLE_NAME,
-                    Config.Database.TITLE to wallpaper.title,
-                    Config.Database.URL to wallpaper.url,
-                    Config.Database.PROTECT to wallpaper.protect,
-                    Config.Database.DATE to wallpaper.date.time)
+    /**
+     * 插入数据
+     */
+    fun insert(wallpaper: Wallpaper): Boolean {
+        return try {
+            use {
+                insert(Config.Database.TABLE_NAME,
+                        Config.Database.TITLE to wallpaper.title,
+                        Config.Database.URL to wallpaper.url,
+                        Config.Database.PROTECT to wallpaper.protect,
+                        Config.Database.DATE to wallpaper.date.time)
+            }
+            true
+        } catch(e: Exception) {
+            Log.d(TAG, "insert")
+            false
         }
     }
 
+    /**
+     * 删除
+     */
     fun delete(id: Int?): Boolean {
         if (id == null) {
             return false
@@ -53,6 +67,9 @@ class DatabaseManager : ManagedSQLiteOpenHelper(App.instance, Config.Database.DA
         }
     }
 
+    /**
+     * 更新Title和Url
+     */
     fun update(wallpaper: Wallpaper) {
         use {
             update(Config.Database.TABLE_NAME,
@@ -61,6 +78,9 @@ class DatabaseManager : ManagedSQLiteOpenHelper(App.instance, Config.Database.DA
         }
     }
 
+    /**
+     * 查询所有的数据
+     */
     fun select(): ArrayList<Wallpaper> {
         var wallpapers: ArrayList<Wallpaper>? = null
         use {

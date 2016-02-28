@@ -20,6 +20,7 @@ import zhou.app.mywallpapers.util.OnClickCallback
 
 /**
  * Created by zhou on 16-2-20.
+ * 壁纸列表适配器
  */
 class WallpapersAdapter(ctx: Context? = null, wps: List<Wallpaper>? = null) : RecyclerView.Adapter<WallpapersAdapter.BaseHolder>() {
 
@@ -99,7 +100,7 @@ class WallpapersAdapter(ctx: Context? = null, wps: List<Wallpaper>? = null) : Re
     }
 
     override fun getItemCount(): Int {
-        return (wallpapers?.size ?: 0) + 1
+        return (wallpapers?.size ?: 0) + functionalCount
     }
 
     override fun onCreateViewHolder(p0: ViewGroup?, p1: Int): BaseHolder? {
@@ -142,6 +143,9 @@ class WallpapersAdapter(ctx: Context? = null, wps: List<Wallpaper>? = null) : Re
         }
     }
 
+    /**
+     * 功能类Holder
+     */
     class FunctionalHolder(root: View) : BaseHolder(root) {
 
         val icon: ImageView
@@ -153,6 +157,9 @@ class WallpapersAdapter(ctx: Context? = null, wps: List<Wallpaper>? = null) : Re
         }
     }
 
+    /**
+     * 壁纸缩略图Holder
+     */
     class WallpaperHolder(root: View) : BaseHolder(root) {
 
         val wallpaper: ImageView

@@ -23,6 +23,7 @@ import zhou.app.mywallpapers.util.notice
 
 /**
  * Created by zhou on 16-2-23.
+ * 显示壁纸详情得Dialog
  */
 class WallpaperDetailDialog : DialogFragment() {
 

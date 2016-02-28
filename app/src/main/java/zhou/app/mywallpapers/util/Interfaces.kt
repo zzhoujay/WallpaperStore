@@ -4,6 +4,7 @@ import android.view.View
 
 /**
  * Created by zhou on 16-2-21.
+ * 一些接口
  */
 
 interface OnClickCallback {
@@ -24,8 +25,4 @@ interface Callback2<T, K> {
 
 interface Callback3<T, K, M> {
     fun call(t: T? = null, k: K? = null, m: M? = null)
-}
-
-interface Notifier {
-    fun notice(n: Any?=null)
 }

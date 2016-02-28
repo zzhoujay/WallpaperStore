@@ -6,6 +6,7 @@ import java.io.InputStream
 
 /**
  * Created by zhou on 16-2-27.
+ * IO工具
  */
 
 fun loadWallpaperInputStream(path: String): InputStream? {

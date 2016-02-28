@@ -6,12 +6,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.activity_display.*
-import org.jetbrains.anko.UI
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.toast
-import pub.devrel.easypermissions.AfterPermissionGranted
-import pub.devrel.easypermissions.EasyPermissions
 import zhou.app.mywallpapers.App
 import zhou.app.mywallpapers.R
 import zhou.app.mywallpapers.common.Config
@@ -25,53 +29,66 @@ import zhou.app.mywallpapers.util.loadWallpaperInputStream
 
 /**
  * Created by zhou on 16-2-21.
+ * 壁纸选择Activity
  */
-class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
+class WallpaperDisplayActivity : AppCompatActivity() {
 
     private var wallpaperFragment: WallpaperDisplayFragment? = null
     private var currWallpaper: Wallpaper? = null
 
     private var wallpaperDetailDialog: WallpaperDetailDialog? = null
 
-    override fun onPermissionsDenied(p0: Int, p1: MutableList<String>?) {
-    }
 
-    override fun onPermissionsGranted(p0: Int, p1: MutableList<String>?) {
-    }
-
-    @AfterPermissionGranted(Config.Flag.permission_flag)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
         setContentView(R.layout.activity_display)
+
+        wallpaper_preview.setImageDrawable(WallpaperManager.getInstance(applicationContext).drawable)
 
         wallpaperFragment = WallpaperDisplayFragment.newInstance()
 
         supportFragmentManager.beginTransaction().add(R.id.container, wallpaperFragment).commit()
 
-
-        if (!EasyPermissions.hasPermissions(applicationContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            EasyPermissions.requestPermissions(this, "gg", Config.Flag.permission_flag, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        }
-
-        wallpaper_preview.postDelayed({
-            wallpaper_preview.setImageDrawable(WallpaperManager.getInstance(applicationContext).drawable)
-        }, 200)
-
         wallpaper_preview.onTapCallback = object : Callback0 {
             override fun call() {
-                wallpaperFragment?.optionBarVisible = !(wallpaperFragment?.optionBarVisible ?: false)
+                if (currWallpaper != null) {
+                    wallpaperFragment?.optionBarVisible = !(wallpaperFragment?.optionBarVisible ?: false)
+                }
             }
         }
 
-//        wall
+        checkPermission()
+    }
+
+    fun checkPermission() {
+
+        Dexter.checkPermission(object : PermissionListener {
+            override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+                wallpaperFragment?.onPermissionReady()
+            }
+
+            override fun onPermissionRationaleShouldBeShown(p0: PermissionRequest?, p1: PermissionToken?) {
+                p1?.continuePermissionRequest()
+            }
+
+            override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+                alert(R.string.permission_message, R.string.permission_title, {
+                    builder.setPositiveButton(R.string.permission_positive, { dialog, which ->
+                        checkPermission()
+                    }).setNegativeButton(R.string.permission_negative, { dialog, which ->
+                        finish()
+                    })
+                }).show()
+
+            }
+
+        }, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
     }
 
     override fun onResume() {
         super.onResume()
         App.instance.bus.register(this)
-        UI { }
     }
 
 
@@ -97,6 +114,7 @@ class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.Permission
                             .crossFade()
                             .into(wallpaper_preview)
                 }
+                wallpaperFragment?.topBarEnable = currWallpaper != null
             }
             Config.Action.set_wallpaper -> {
                 if (currWallpaper != null) {

@@ -7,6 +7,7 @@ import java.util.*
 
 /**
  * Created by zhou on 16-2-20.
+ * 壁纸的模型类
  */
 
 data class Wallpaper(var title: String = "", var url: String, var protect: Boolean = false, var date: Date = Date()) : Parcelable {
@@ -16,7 +17,7 @@ data class Wallpaper(var title: String = "", var url: String, var protect: Boole
         this.id = id
     }
 
-    constructor(source: Parcel): this(source.readString(), source.readString(), 1.toByte().equals(source.readByte()), source.readSerializable() as Date)
+    constructor(source: Parcel) : this(source.readString(), source.readString(), 1.toByte().equals(source.readByte()), source.readSerializable() as Date)
 
     override fun describeContents(): Int {
         return 0

@@ -12,6 +12,7 @@ import android.view.animation.*
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.fragment_display.*
 import org.jetbrains.anko.async
+import org.jetbrains.anko.enabled
 import org.jetbrains.anko.uiThread
 import zhou.app.mywallpapers.App
 import zhou.app.mywallpapers.R
@@ -25,10 +26,13 @@ import zhou.app.mywallpapers.util.*
 
 /**
  * Created by zhou on 16-2-21.
+ * 壁纸展示的Fragment
  */
 class WallpaperDisplayFragment : Fragment() {
 
     var adapter: WallpapersAdapter? = null
+    var needToReload = false
+        private set
 
     override fun onResume() {
         super.onResume()
@@ -94,13 +98,17 @@ class WallpaperDisplayFragment : Fragment() {
                 }
             }
         }
-        recyclerView.adapter = adapter
 
         topBar.setOnClickListener {
             notice(Event(Config.Action.set_wallpaper))
         }
 
-        reloadWallpaper()
+        recyclerView.adapter = adapter
+
+        if (needToReload) {
+            reloadWallpaper()
+        }
+
     }
 
     fun reloadWallpaper(wallpaper: Wallpaper? = null) {
@@ -113,6 +121,14 @@ class WallpaperDisplayFragment : Fragment() {
                 adapter!!.wallpapers = wallpapers
                 adapter!!.notifyDataSetChanged()
             }
+        }
+    }
+
+    fun onPermissionReady() {
+        if (adapter != null) {
+            reloadWallpaper()
+        } else {
+            needToReload = true
         }
     }
 
@@ -172,5 +188,10 @@ class WallpaperDisplayFragment : Fragment() {
             }
         }
 
+    var topBarEnable: Boolean
+        get() = topBar.enabled
+        set(value) {
+            topBar.enabled = value
+        }
 
 }

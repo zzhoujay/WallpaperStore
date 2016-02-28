@@ -8,6 +8,7 @@ import android.provider.MediaStore
 
 /**
  * Created by zhou on 16-2-23.
+ * 从URI中获取真实路径的工具
  */
 
 fun getImagePathFromUri(context: Context, fileUrl: Uri?): String? {

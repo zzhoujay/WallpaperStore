@@ -2,6 +2,7 @@ package zhou.app.mywallpapers.common
 
 /**
  * Created by zhou on 16-2-25.
+ * 一些配置信息、常量等
  */
 
 object Config {
@@ -14,7 +15,7 @@ object Config {
         val URL = "url"
         val DATE = "date"
         val PROTECT = "protect"
-        val DATABASE_VERSION = 2
+        val DATABASE_VERSION = 1
     }
 
     object Action {
@@ -22,11 +23,12 @@ object Config {
         const val set_wallpaper = 0x1235
         const val cache_dialog = 0x432
         const val reload_list = 0x134
-
+        const val notifier_permission_ready = 0x666
     }
 
     object Tag {
         const val wallpaper = "wallpaper"
+        const val initStart = "initStart"
     }
 
     object Flag {

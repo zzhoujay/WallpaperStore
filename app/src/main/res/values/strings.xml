@@ -4,4 +4,10 @@
     <string name="text_set_wallpaper">设置壁纸</string>
     <string name="text_title">标题</string>
     <string name="text_image">图片</string>
+
+    <string name="rationale">壁纸库需要权限来加载本地的图片,没有权限将无法正常工作</string>
+    <string name="permission_title">提示</string>
+    <string name="permission_message">壁纸库 没有权限将不能正常工作</string>
+    <string name="permission_positive">重新给予</string>
+    <string name="permission_negative">退出</string>
 </resources>

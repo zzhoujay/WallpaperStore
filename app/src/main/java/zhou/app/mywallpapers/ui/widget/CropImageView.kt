@@ -16,6 +16,7 @@ import zhou.app.mywallpapers.util.Callback0
 
 /**
  * Created by zhou on 16-2-25.
+ * 可拖动图片的ImageView
  */
 class CropImageView : ImageView {
 

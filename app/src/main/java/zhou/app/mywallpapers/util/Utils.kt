@@ -13,7 +13,9 @@ fun Fragment.toast(msg: CharSequence, time: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(context, msg, time).show()
 }
 
-
+/**
+ * 事件的封装类
+ */
 data class Event(val code: Int, val value: Any? = null, val from: Any? = null, val `to`: Any? = null)
 
 fun Any.notice(event: Event) {
