@@ -12,22 +12,47 @@
         android:fitsSystemWindows="false"
         android:scaleType="centerCrop" />
 
-    <Button
-        android:id="@+id/topBar"
-        style="@style/Top_bar"
+    <LinearLayout
+        android:id="@+id/topBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:clickable="true"
-        android:drawableLeft="@drawable/ic_done"
-        android:drawablePadding="8dp"
-        android:gravity="start|center_vertical"
-        android:paddingLeft="10dp"
-        android:text="@string/text_set_wallpaper" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        <Button
+            android:id="@+id/topBar"
+            style="@style/TopBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:clickable="true"
+            android:drawableLeft="@drawable/ic_done"
+            android:drawablePadding="8dp"
+            android:gravity="start|center_vertical"
+            android:paddingLeft="10dp"
+            android:text="@string/text_set_wallpaper" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="@drawable/shadow_top" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wallpapers"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/recycler_view_height"
-        android:layout_gravity="bottom" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="@drawable/shadow" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/wallpaperThumbnailHeight" />
+    </LinearLayout>
 
 </FrameLayout>

@@ -10,6 +10,10 @@ interface OnClickCallback {
     fun onClick(view: View, position: Int)
 }
 
+interface Callback0{
+    fun call()
+}
+
 interface Callback<T> {
     fun call(t: T? = null)
 }

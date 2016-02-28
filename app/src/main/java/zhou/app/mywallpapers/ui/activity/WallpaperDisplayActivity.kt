@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.activity_display.*
+import org.jetbrains.anko.UI
 import org.jetbrains.anko.toast
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
@@ -15,8 +16,9 @@ import zhou.app.mywallpapers.App
 import zhou.app.mywallpapers.R
 import zhou.app.mywallpapers.common.Config
 import zhou.app.mywallpapers.model.Wallpaper
-import zhou.app.mywallpapers.ui.dialog.DetailDialog
+import zhou.app.mywallpapers.ui.dialog.WallpaperDetailDialog
 import zhou.app.mywallpapers.ui.fragment.WallpaperDisplayFragment
+import zhou.app.mywallpapers.util.Callback0
 import zhou.app.mywallpapers.util.Event
 import zhou.app.mywallpapers.util.getImagePathFromUri
 import zhou.app.mywallpapers.util.loadWallpaperInputStream
@@ -29,7 +31,7 @@ class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.Permission
     private var wallpaperFragment: WallpaperDisplayFragment? = null
     private var currWallpaper: Wallpaper? = null
 
-    private var detailDialog: DetailDialog? = null
+    private var wallpaperDetailDialog: WallpaperDetailDialog? = null
 
     override fun onPermissionsDenied(p0: Int, p1: MutableList<String>?) {
     }
@@ -53,19 +55,23 @@ class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.Permission
             EasyPermissions.requestPermissions(this, "gg", Config.Flag.permission_flag, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 
-        val d = WallpaperManager.getInstance(applicationContext).drawable
+        wallpaper_preview.postDelayed({
+            wallpaper_preview.setImageDrawable(WallpaperManager.getInstance(applicationContext).drawable)
+        }, 200)
 
-        println(d)
+        wallpaper_preview.onTapCallback = object : Callback0 {
+            override fun call() {
+                wallpaperFragment?.optionBarVisible = !(wallpaperFragment?.optionBarVisible ?: false)
+            }
+        }
 
-        wallpaper_preview.setImageDrawable(d)
-
-        //        Glide.with(this).load("file:///android_asset/primary_1.jpg").into(wallpaper_preview)
-
+//        wall
     }
 
     override fun onResume() {
         super.onResume()
         App.instance.bus.register(this)
+        UI { }
     }
 
 
@@ -78,8 +84,8 @@ class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.Permission
     fun handleEvent(event: Event) {
         when (event.code) {
             Config.Action.cache_dialog -> {
-                if (event.value is DetailDialog) {
-                    detailDialog = event.value
+                if (event.value is WallpaperDetailDialog) {
+                    wallpaperDetailDialog = event.value
                 }
             }
             Config.Action.preview_wallpaper -> {
@@ -122,7 +128,7 @@ class WallpaperDisplayActivity : AppCompatActivity(), EasyPermissions.Permission
             if (path == null) {
                 toast("文件无效")
             } else {
-                detailDialog?.imagePath = path
+                wallpaperDetailDialog?.imagePath = path
                 println("path:$path")
             }
         }

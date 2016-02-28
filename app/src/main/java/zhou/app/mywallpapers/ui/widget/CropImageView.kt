@@ -11,6 +11,8 @@ import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.ImageView
+import zhou.app.mywallpapers.util.Callback
+import zhou.app.mywallpapers.util.Callback0
 
 /**
  * Created by zhou on 16-2-25.
@@ -43,6 +45,7 @@ class CropImageView : ImageView {
     var border = 0f
     var horizontal = true
     var hasMeasured = false
+    var onTapCallback: Callback0? = null
 
 
     fun init() {
@@ -132,6 +135,14 @@ class CropImageView : ImageView {
             imageMatrix = newMatrix
             invalidate()
             return true
+        }
+
+        override fun onSingleTapUp(e: MotionEvent?): Boolean {
+            if (onTapCallback != null) {
+                onTapCallback!!.call()
+                return true
+            }
+            return false
         }
 
     })

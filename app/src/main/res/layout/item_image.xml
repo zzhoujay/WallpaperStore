@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/parent"
+    style="@style/ClickableItem"
     android:layout_width="@dimen/recycler_view_height"
     android:layout_height="@dimen/recycler_view_height"
     android:background="@color/item_add_background"
     android:clickable="true"
-    android:longClickable="true"
-    android:foreground="?attr/selectableItemBackground">
+    android:longClickable="true">
 
     <ImageView
         android:id="@+id/icon"
@@ -27,10 +27,10 @@
 
     <ImageView
         android:id="@+id/wallpaper_icon"
-        android:src="@drawable/ic_select"
         android:layout_width="@dimen/wallpaperItemIconSize"
         android:layout_height="@dimen/wallpaperItemIconSize"
         android:layout_gravity="center"
+        android:src="@drawable/ic_select"
         android:visibility="gone" />
 
 </FrameLayout>

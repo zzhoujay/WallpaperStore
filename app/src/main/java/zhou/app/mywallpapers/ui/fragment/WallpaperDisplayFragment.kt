@@ -1,9 +1,6 @@
 package zhou.app.mywallpapers.ui.fragment
 
-import android.app.WallpaperManager
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -11,9 +8,7 @@ import android.support.v7.widget.PopupMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.animation.GlideAnimation
-import com.bumptech.glide.request.target.SimpleTarget
+import android.view.animation.*
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.fragment_display.*
 import org.jetbrains.anko.async
@@ -23,9 +18,8 @@ import zhou.app.mywallpapers.R
 import zhou.app.mywallpapers.common.Config
 import zhou.app.mywallpapers.model.Wallpaper
 import zhou.app.mywallpapers.persistence.DatabaseManager
-import zhou.app.mywallpapers.ui.activity.WallpaperDisplayActivity
 import zhou.app.mywallpapers.ui.adapter.WallpapersAdapter
-import zhou.app.mywallpapers.ui.dialog.DetailDialog
+import zhou.app.mywallpapers.ui.dialog.WallpaperDetailDialog
 import zhou.app.mywallpapers.util.*
 
 
@@ -79,7 +73,7 @@ class WallpaperDisplayFragment : Fragment() {
                     popMenu.setOnMenuItemClickListener {
                         when (it.itemId) {
                             Config.Id.menu_edit -> {
-                                val d = DetailDialog.newInstance(k)
+                                val d = WallpaperDetailDialog.newInstance(k)
                                 notice(Event(Config.Action.cache_dialog, d))
                                 d.show(fragmentManager, "detail")
                             }
@@ -142,4 +136,41 @@ class WallpaperDisplayFragment : Fragment() {
             return f;
         }
     }
+
+    fun generateAnimation(show: Boolean, top: Boolean): Animation {
+        val fromY = if (top) -1f else 1f
+        val fromA = if (show) 0f else 1f
+        val toA = if (show) 1f else 0f
+        val animationTranslate = TranslateAnimation(Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, 0f, Animation.RELATIVE_TO_SELF, fromY, Animation.RELATIVE_TO_SELF, 0f)
+        val animationAlpha = AlphaAnimation(fromA, toA)
+        val animationSet = AnimationSet(true)
+        animationSet.interpolator = AccelerateInterpolator()
+        animationSet.duration = 200
+        animationSet.addAnimation(animationTranslate)
+        animationSet.addAnimation(animationAlpha)
+        return animationSet
+    }
+
+    val showAnimationTopBar: Animation by lazy {
+        generateAnimation(true, true)
+    }
+    val showAnimationWallpapers: Animation by lazy {
+        generateAnimation(true, false)
+    }
+
+    var optionBarVisible: Boolean
+        get() = wallpapers.visibility == View.VISIBLE
+        set(value) {
+            if (value) {
+                topBarLayout.startAnimation(showAnimationTopBar)
+                topBarLayout.visibility = View.VISIBLE
+                wallpapers.startAnimation(showAnimationWallpapers)
+                wallpapers.visibility = View.VISIBLE
+            } else {
+                topBarLayout.visibility = View.INVISIBLE
+                wallpapers.visibility = View.INVISIBLE
+            }
+        }
+
+
 }

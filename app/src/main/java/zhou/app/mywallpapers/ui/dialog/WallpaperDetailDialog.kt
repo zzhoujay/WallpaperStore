@@ -24,12 +24,12 @@ import zhou.app.mywallpapers.util.notice
 /**
  * Created by zhou on 16-2-23.
  */
-class DetailDialog : DialogFragment() {
+class WallpaperDetailDialog : DialogFragment() {
 
     companion object {
 
-        fun newInstance(wallpaper: Wallpaper? = null): DetailDialog {
-            val f = DetailDialog()
+        fun newInstance(wallpaper: Wallpaper? = null): WallpaperDetailDialog {
+            val f = WallpaperDetailDialog()
             if (wallpaper != null) {
                 val b = Bundle()
                 b.putParcelable(Config.Tag.wallpaper, wallpaper)
@@ -100,7 +100,7 @@ class DetailDialog : DialogFragment() {
                 async() {
                     DatabaseManager.instance.update(wallpaper!!)
                     uiThread {
-                        notice(Event(Config.Action.reload_list, null, this@DetailDialog, WallpaperDisplayFragment::class.java))
+                        notice(Event(Config.Action.reload_list, null, this@WallpaperDetailDialog, WallpaperDisplayFragment::class.java))
                         dismiss()
                     }
                 }

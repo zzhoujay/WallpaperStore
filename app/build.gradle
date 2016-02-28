@@ -37,6 +37,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.2.0'
     compile 'com.android.support:recyclerview-v7:23.2.0'
 }
+
 buildscript {
     ext.kotlin_version = '1.0.0'
     ext.anko_version = '0.8.2'
@@ -47,6 +48,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
+
 repositories {
     mavenCentral()
 }
