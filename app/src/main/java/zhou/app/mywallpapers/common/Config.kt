@@ -29,6 +29,7 @@ object Config {
     object Tag {
         const val wallpaper = "wallpaper"
         const val initStart = "initStart"
+        const val asset_prefix = "file:///android_asset/"
     }
 
     object Flag {

@@ -6,7 +6,7 @@
 
 ### Apk
 
-[这里下载](https://www.pgyer.com/WallpaperStore)
+[这里下载](https://www.pgyer.com/wallpaper-store)
 
 ### 截图
 

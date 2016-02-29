@@ -28,8 +28,8 @@ class App : Application() {
         instance = this
         Dexter.initialize(this)
         if (getBoolean(this, Config.Tag.initStart, true)) {
-            DatabaseManager.instance.insert(Wallpaper("", "file:///android_asset/primary_3.jpg", true))
-            DatabaseManager.instance.insert(Wallpaper("", "file:///android_asset/primary_2.jpg", true))
+//            DatabaseManager.instance.insert(Wallpaper("", "file:///android_asset/primary_3.jpg", true))
+//            DatabaseManager.instance.insert(Wallpaper("", "file:///android_asset/primary_2.jpg", true))
             DatabaseManager.instance.insert(Wallpaper("放风筝的女孩", "file:///android_asset/primary_1.jpg", true))
         }
         setBoolean(this, Config.Tag.initStart, false)
